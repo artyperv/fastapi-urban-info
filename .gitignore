@@ -1,0 +1,16 @@
+.vscode
+.idea
+__pycache__
+app.egg-info
+*.pyc
+.mypy_cache
+.coverage
+htmlcov
+.cache
+.venv
+.env
+venv
+.ruff_cache
+.DS_Store
+
+docker-compose.override.yml
