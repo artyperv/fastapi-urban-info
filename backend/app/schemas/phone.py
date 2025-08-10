@@ -8,8 +8,9 @@ class OrganizationPhoneRead(BaseModel):
     id: uuid.UUID
     phone: str
 
-    class Config:
-        from_attributes = True
+    model_config = {
+        "from_attributes": True
+    }
 
 class OrganizationPhoneCreate(BaseModel):
     phone: Annotated[

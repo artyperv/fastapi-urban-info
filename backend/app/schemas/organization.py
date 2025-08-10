@@ -23,5 +23,6 @@ class OrganizationRead(OrganizationBase):
     phones: list[OrganizationPhoneRead] = []
     activities: list[ActivityRead] = []
 
-    class Config:
-        from_attributes = True
+    model_config = {
+        "from_attributes": True
+    }
