@@ -58,3 +58,13 @@ curl -X 'GET' \
   -H 'accept: application/json' \
   -H 'X-API-Token: YOUR_TOKEN_HERE'
 ```
+
+## Тестирование:
+
+1. Заменить необходимое в тестовой конфигурации:
+- config: `backend/config_test.yaml`
+
+2. Запустить тесты:
+```bash
+pytest
+```

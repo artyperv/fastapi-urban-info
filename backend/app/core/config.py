@@ -4,7 +4,6 @@ import secrets
 from pydantic import (
     BaseModel,
     PostgresDsn,
-    RedisDsn,
     computed_field,
 )
 from pydantic_core import MultiHostUrl
@@ -18,7 +17,8 @@ from pydantic_settings import (
 
 def get_config_path() -> str:
     base_dir = os.path.dirname(__file__)
-    return base_dir + "/../../config.yaml"
+    config_path = os.getenv("CONFIG_PATH", "/../../config.yaml")
+    return base_dir + config_path
 
 
 class DatabaseSettings(BaseModel):

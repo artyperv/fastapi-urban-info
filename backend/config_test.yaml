@@ -1,0 +1,14 @@
+DEBUG: true
+
+service:
+  API_PREFIX: "/api/v1"
+
+security:
+  API_TOKEN: YOUR_TOKEN_HERE
+
+database:
+  SERVER: localhost
+  PORT: 5432
+  DB: urban_info_test_db
+  USER: postgres
+  PASSWORD: postgres
