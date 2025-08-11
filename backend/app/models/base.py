@@ -5,9 +5,10 @@ from sqlalchemy.orm import declarative_base, Mapped, mapped_column
 
 Base = declarative_base()
 
+
 class BaseModel(Base):
     __abstract__ = True
-    
+
     id: Mapped[uuid.UUID] = mapped_column(
         UUID,
         default=uuid.uuid4,
@@ -15,18 +16,22 @@ class BaseModel(Base):
         index=True,
         nullable=False,
     )
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now, nullable=False)
-    modified_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.now, nullable=False
+    )
+    modified_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.now, nullable=False
+    )
 
 
 # Автоматическая установка временных меток перед вставкой
-@event.listens_for(BaseModel, 'before_insert', propagate=True)
+@event.listens_for(BaseModel, "before_insert", propagate=True)
 def timestamp_before_insert(mapper, connection, target):
     target.created_at = datetime.now()
     target.modified_at = datetime.now()
 
 
 # Автоматическая установка временных меток перед обновлением
-@event.listens_for(BaseModel, 'before_update', propagate=True)
+@event.listens_for(BaseModel, "before_update", propagate=True)
 def timestamp_before_update(mapper, connection, target):
     target.modified_at = datetime.now()

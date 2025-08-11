@@ -1,6 +1,5 @@
-from typing import List
 import uuid
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, HTTPException, status
 
 from app.schemas.activity import ActivityRead, ActivityCreate
 from app.crud import activity as activity_crud

@@ -1,10 +1,8 @@
 import uuid
 from app.models import Organization, OrganizationPhone, Activity
-from typing import List
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import literal_column, select
 from sqlalchemy.orm import aliased, selectinload
-from app.models import Activity, Organization
 
 
 # Создать организацию
@@ -34,7 +32,9 @@ async def create_organization(
 
 
 # Получить организацию по id
-async def get_organization(session: AsyncSession, organization_id: uuid.UUID) -> Organization | None:
+async def get_organization(
+    session: AsyncSession, organization_id: uuid.UUID
+) -> Organization | None:
     result = await session.execute(
         select(Organization).where(Organization.id == organization_id)
     )
@@ -44,14 +44,19 @@ async def get_organization(session: AsyncSession, organization_id: uuid.UUID) ->
 # Получить все организации
 async def get_organizations(session: AsyncSession) -> list[Organization]:
     result = await session.execute(
-        select(Organization)
-        .options(selectinload(Organization.building), selectinload(Organization.activities), selectinload(Organization.phones))
+        select(Organization).options(
+            selectinload(Organization.building),
+            selectinload(Organization.activities),
+            selectinload(Organization.phones),
+        )
     )
     return list(result.scalars().all())
 
 
 # Получить организации по различным критериям
-async def get_organizations_by_building(session: AsyncSession, building_id: uuid.UUID) -> list[Organization]:
+async def get_organizations_by_building(
+    session: AsyncSession, building_id: uuid.UUID
+) -> list[Organization]:
     result = await session.execute(
         select(Organization).where(Organization.building_id == building_id)
     )
@@ -59,7 +64,9 @@ async def get_organizations_by_building(session: AsyncSession, building_id: uuid
 
 
 # Получить организации по зданиям
-async def get_organizations_by_buildings(session: AsyncSession, buildings: list[uuid.UUID]) -> list[Organization]:
+async def get_organizations_by_buildings(
+    session: AsyncSession, buildings: list[uuid.UUID]
+) -> list[Organization]:
     result = await session.execute(
         select(Organization).where(Organization.building_id.in_(buildings))
     )
@@ -67,7 +74,9 @@ async def get_organizations_by_buildings(session: AsyncSession, buildings: list[
 
 
 # Получить организации по активности
-async def get_organizations_by_activity(session: AsyncSession, activity_id: uuid.UUID) -> list[Organization]:
+async def get_organizations_by_activity(
+    session: AsyncSession, activity_id: uuid.UUID
+) -> list[Organization]:
     result = await session.execute(
         select(Organization)
         .join(Organization.activities)
@@ -77,10 +86,11 @@ async def get_organizations_by_activity(session: AsyncSession, activity_id: uuid
 
 
 # Поиск организаций по имени
-async def search_organizations_by_name(session: AsyncSession, name_substring: str) -> list[Organization]:
+async def search_organizations_by_name(
+    session: AsyncSession, name_substring: str
+) -> list[Organization]:
     result = await session.execute(
-        select(Organization)
-        .filter(Organization.name.ilike(f"%{name_substring}%"))
+        select(Organization).filter(Organization.name.ilike(f"%{name_substring}%"))
     )
     return list(result.scalars().all())
 
@@ -90,7 +100,6 @@ async def get_organizations_by_activity_with_children(
     session: AsyncSession,
     root_activity_id: uuid.UUID,
 ) -> list[Organization]:
-
     # Алиасы для таблицы activity
     activity_alias = aliased(Activity)
     activity_cte = (
@@ -114,8 +123,7 @@ async def get_organizations_by_activity_with_children(
             activity_alias.name,
             (activity_cte.c.level + 1).label("level"),
         ).where(
-            (activity_alias.parent_id == activity_cte.c.id) &
-            (activity_cte.c.level < 3)
+            (activity_alias.parent_id == activity_cte.c.id) & (activity_cte.c.level < 3)
         )
     )
 

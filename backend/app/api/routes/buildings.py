@@ -1,6 +1,6 @@
 from typing import List
 import uuid
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, HTTPException, status
 
 from app.schemas.building import BuildingRead, BuildingCreate
 from app.crud import building as building_crud

@@ -47,24 +47,22 @@ async def create_activity(
 
 
 # Получить деятельность по id
-async def get_activity(session: AsyncSession, activity_id: uuid.UUID) -> Activity | None:
-    result = await session.execute(
-        select(Activity).where(Activity.id == activity_id)
-    )
+async def get_activity(
+    session: AsyncSession, activity_id: uuid.UUID
+) -> Activity | None:
+    result = await session.execute(select(Activity).where(Activity.id == activity_id))
     return result.scalar_one_or_none()
 
 
 # Получить деятельность с дочерними элементами
-async def get_activity_with_children(session: AsyncSession, activity_id: uuid.UUID) -> Activity | None:
-    result = await session.execute(
-        select(Activity).where(Activity.id == activity_id)
-    )
+async def get_activity_with_children(
+    session: AsyncSession, activity_id: uuid.UUID
+) -> Activity | None:
+    result = await session.execute(select(Activity).where(Activity.id == activity_id))
     return result.scalar_one_or_none()
 
 
 # Получить все деятельности
 async def get_activities(session: AsyncSession) -> list[Activity]:
-    result = await session.execute(
-        select(Activity)
-    )
+    result = await session.execute(select(Activity))
     return list(result.scalars().all())

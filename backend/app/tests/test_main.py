@@ -5,6 +5,7 @@ import pytest
 # make all test mark with `asyncio`
 pytestmark = pytest.mark.asyncio
 
+
 # Проверяем, что без токена доступ запрещён (ожидаем 401 Unauthorized)
 async def test_access_without_token(async_client: AsyncClient):
     print(async_client.base_url)
@@ -15,7 +16,8 @@ async def test_access_without_token(async_client: AsyncClient):
 
 # Проверяем доступ с токеном (200 или 404, если организаций нет)
 async def test_access_with_token(
-    async_client: AsyncClient, auth_headers: dict,
+    async_client: AsyncClient,
+    auth_headers: dict,
 ):
     response = await async_client.get("/organizations/", headers=auth_headers)
     assert response.status_code in (200, 404)

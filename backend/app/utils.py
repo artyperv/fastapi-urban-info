@@ -23,6 +23,6 @@ def get_bounding_box_area(
         min_lon=longitude - lon_delta,
         min_lat=latitude - lat_delta,
         max_lon=longitude + lon_delta,
-        max_lat=latitude + lat_delta
+        max_lat=latitude + lat_delta,
     )
     return box

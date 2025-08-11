@@ -12,6 +12,8 @@ api_router = APIRouter(
 )
 
 # Добавление маршрутов из различных модулей
-api_router.include_router(organizations.router, prefix="/organizations", tags=["organizations"])
+api_router.include_router(
+    organizations.router, prefix="/organizations", tags=["organizations"]
+)
 api_router.include_router(activities.router, prefix="/activities", tags=["activities"])
 api_router.include_router(buildings.router, prefix="/buildings", tags=["buildings"])

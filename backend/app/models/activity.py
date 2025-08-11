@@ -1,15 +1,10 @@
 from typing import List, Optional
 import uuid
-from sqlalchemy import (
-    UUID, ForeignKey, Integer, String, Float
-)
-from sqlalchemy.orm import (
-    relationship, Mapped, mapped_column
-)
+from sqlalchemy import UUID, ForeignKey, String
+from sqlalchemy.orm import relationship, Mapped, mapped_column
 
 from .base import BaseModel
 from .association_tables import organization_activities
-
 
 
 class Activity(BaseModel):
@@ -30,7 +25,10 @@ class Activity(BaseModel):
         "Activity", remote_side=[id], back_populates="children", lazy="selectin"
     )
     children: Mapped[List["Activity"]] = relationship(
-        "Activity", back_populates="parent", cascade="all, delete-orphan", lazy="selectin"
+        "Activity",
+        back_populates="parent",
+        cascade="all, delete-orphan",
+        lazy="selectin",
     )
 
     organizations: Mapped[List["Organization"]] = relationship(

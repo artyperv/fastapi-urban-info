@@ -1,8 +1,5 @@
-from math import radians, cos
-from typing import List
 import uuid
-from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import APIRouter, HTTPException, Query, status
 
 from app.crud import organization as org_crud, building as buildings_crud
 from app.api.deps import AsyncSessionDep
@@ -12,7 +9,12 @@ from app.utils import get_bounding_box_area
 router = APIRouter()
 
 
-@router.post("/", response_model=OrganizationRead, status_code=status.HTTP_201_CREATED, description="Создать новую организацию с указанными данными.")
+@router.post(
+    "/",
+    response_model=OrganizationRead,
+    status_code=status.HTTP_201_CREATED,
+    description="Создать новую организацию с указанными данными.",
+)
 async def create_organization(
     session: AsyncSessionDep,
     organization_in: OrganizationCreate,
@@ -30,7 +32,11 @@ async def create_organization(
     return org
 
 
-@router.get("/by-building/{building_id}", response_model=list[OrganizationRead], description="Получить список организаций, находящихся в указанном здании по его ID.")
+@router.get(
+    "/by-building/{building_id}",
+    response_model=list[OrganizationRead],
+    description="Получить список организаций, находящихся в указанном здании по его ID.",
+)
 async def get_organizations_by_building(
     session: AsyncSessionDep,
     building_id: uuid.UUID,
@@ -44,11 +50,17 @@ async def get_organizations_by_building(
     return organizations
 
 
-@router.get("/by-activity/{activity_id}", response_model=list[OrganizationRead], description="Получить список организаций по виду деятельности, с возможностью включения дочерних видов.")
+@router.get(
+    "/by-activity/{activity_id}",
+    response_model=list[OrganizationRead],
+    description="Получить список организаций по виду деятельности, с возможностью включения дочерних видов.",
+)
 async def get_organizations_by_activity(
     session: AsyncSessionDep,
     activity_id: uuid.UUID,
-    with_children: bool = Query(False, description="Включить дочерние виды деятельности"),
+    with_children: bool = Query(
+        False, description="Включить дочерние виды деятельности"
+    ),
 ):
     """
     Получает список организаций по виду деятельности.
@@ -60,13 +72,19 @@ async def get_organizations_by_activity(
             root_activity_id=activity_id,
         )
     else:
-        organizations = await org_crud.get_organizations_by_activity(session, activity_id)
+        organizations = await org_crud.get_organizations_by_activity(
+            session, activity_id
+        )
     if not organizations:
         raise HTTPException(status_code=404, detail="Organizations not found")
     return organizations
 
 
-@router.get("/by-radius/", response_model=list[OrganizationRead], description="Получить список организаций в заданном радиусе (км) от указанной точки (широта и долгота).")
+@router.get(
+    "/by-radius/",
+    response_model=list[OrganizationRead],
+    description="Получить список организаций в заданном радиусе (км) от указанной точки (широта и долгота).",
+)
 async def get_organizations_by_radius(
     session: AsyncSessionDep,
     latitude: float = Query(..., ge=-90.0, le=90.0),
@@ -79,9 +97,7 @@ async def get_organizations_by_radius(
     box = get_bounding_box_area(latitude, longitude, radius_km)
 
     # Находим здания в bounding box
-    buildings_in_box = await buildings_crud.get_buildings_by_coordinates(
-        session, box
-    )
+    buildings_in_box = await buildings_crud.get_buildings_by_coordinates(session, box)
 
     if not buildings_in_box:
         raise HTTPException(status_code=404, detail="No buildings found in radius")
@@ -95,7 +111,11 @@ async def get_organizations_by_radius(
     return organizations
 
 
-@router.get("/{organization_id}", response_model=OrganizationRead, description="Получить подробную информацию об организации по её ID.")
+@router.get(
+    "/{organization_id}",
+    response_model=OrganizationRead,
+    description="Получить подробную информацию об организации по её ID.",
+)
 async def read_organization(
     session: AsyncSessionDep,
     organization_id: uuid.UUID,
@@ -109,7 +129,11 @@ async def read_organization(
     return org
 
 
-@router.get("/", response_model=list[OrganizationRead], description="Получить список всех организаций или выполнить поиск по названию, если передан параметр `name`.")
+@router.get(
+    "/",
+    response_model=list[OrganizationRead],
+    description="Получить список всех организаций или выполнить поиск по названию, если передан параметр `name`.",
+)
 async def list_organizations(
     session: AsyncSessionDep,
     name: str | None = None,

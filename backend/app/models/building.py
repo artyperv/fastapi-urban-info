@@ -1,10 +1,6 @@
 from typing import List
-from sqlalchemy import (
-    Integer, String, Float
-)
-from sqlalchemy.orm import (
-    relationship, Mapped, mapped_column
-)
+from sqlalchemy import String, Float
+from sqlalchemy.orm import relationship, Mapped, mapped_column
 
 from .base import BaseModel
 
@@ -16,4 +12,6 @@ class Building(BaseModel):
     latitude: Mapped[float] = mapped_column(Float, nullable=False)
     longitude: Mapped[float] = mapped_column(Float, nullable=False)
 
-    organizations: Mapped[List["Organization"]] = relationship(back_populates="building", lazy="selectin")
+    organizations: Mapped[List["Organization"]] = relationship(
+        back_populates="building", lazy="selectin"
+    )

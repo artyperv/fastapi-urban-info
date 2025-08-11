@@ -1,5 +1,5 @@
 import uuid
-from pydantic import BaseModel, Field, constr
+from pydantic import BaseModel, Field
 
 
 # --- Building ---
@@ -16,6 +16,4 @@ class BuildingCreate(BuildingBase):
 class BuildingRead(BuildingBase):
     id: uuid.UUID
 
-    model_config = {
-        "from_attributes": True
-    }
+    model_config = {"from_attributes": True}
