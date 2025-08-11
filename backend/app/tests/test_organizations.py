@@ -1,4 +1,7 @@
+import uuid
 from httpx import AsyncClient
+from sqlalchemy.future import select
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.models import Organization
 
 
@@ -80,3 +83,29 @@ async def test_get_organizations_by_id(
     assert response.status_code == 200
     org = response.json()
     assert str(async_organization_orm.id) == org["id"]
+
+
+# Проверяем создание организации
+async def test_create_organization(
+    async_client: AsyncClient,
+    auth_headers: dict,
+    async_activity_orm: Organization,
+    async_building_orm: Organization,
+    async_db: AsyncSession,
+):
+    payload = {
+        "name": "New Organization",
+        "activity_ids": [str(async_activity_orm.id)],
+        "building_id": str(async_building_orm.id),
+    }
+    response = await async_client.post(
+        "/organizations/", headers=auth_headers, json=payload
+    )
+    assert response.status_code == 201
+    data = response.json()
+    assert data["name"] == payload["name"]
+
+    result = await async_db.execute(select(Organization).filter(Organization.id == uuid.UUID(data["id"])))
+    org_in_db = result.scalars().first()
+    assert org_in_db is not None
+    assert org_in_db.name == payload["name"]
