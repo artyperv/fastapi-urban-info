@@ -30,16 +30,25 @@ async def test_get_organizations_by_activity(
 
 # Проверяем получение организаций по ID здания
 async def test_get_organizations_by_building(
-    async_client: AsyncClient, auth_headers: dict, async_organization_orm: Organization
+    async_client: AsyncClient,
+    auth_headers: dict,
+    async_building_orm: Organization,
+    async_organization_orm: Organization, # Как минимум 1 организация уже будет
+    async_db: AsyncSession
 ):
     response = await async_client.get(
-        f"/organizations/by-building/{async_organization_orm.building_id}",
+        f"/organizations/by-building/{async_building_orm.id}",
         headers=auth_headers,
     )
     assert response.status_code == 200
     orgs = response.json()
-    assert any(str(async_organization_orm.id) == o["id"] for o in orgs)
+    response_ids = {uuid.UUID(o["id"]) for o in orgs}
 
+    result = await async_db.execute(select(Organization).filter(Organization.building_id == async_building_orm.id))
+    orgs_in_db = result.scalars().all()
+    db_ids = {org.id for org in orgs_in_db}
+
+    assert db_ids.issubset(response_ids)
 
 # Проверяем поиск организаций в радиусе 1 км от здания тестовой организации
 async def test_get_organizations_by_radius(
